@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20231004
+FROM mcr.microsoft.com/windows/servercore:ltsc2022-KB5032198-amd64
 LABEL authors="Selenium <selenium-developers@googlegroups.com>"
 
 #================================================
