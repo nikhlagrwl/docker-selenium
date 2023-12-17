@@ -10,12 +10,17 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 # Miscellaneous packages
 # Includes minimal runtime used for executing non GUI Java programs
 #========================
-RUN Install-PackageProvider -Name NuGet -Force -Verbose -Scope CurrentUser; \
-    Install-Module -Name PowerShellGet -Force -AllowClobber -Verbose -Scope CurrentUser; \
-    Install-Module -Name Chocolatey -Force -AllowClobber -Verbose -Scope CurrentUser -RequiredVersion 2.2.1; \
-    choco feature enable -n allowGlobalConfirmation; \
-    choco install -y openjdk11 curl unzip jq; \
-    Remove-Item -Force -Recurse ${Env:TEMP}\*
+
+RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" -Y
+
+RUN choco install openjdk11 -Y
+
+# RUN Install-PackageProvider -Name NuGet -Force -Verbose -Scope CurrentUser; \
+#     Install-Module -Name PowerShellGet -Force -AllowClobber -Verbose -Scope CurrentUser; \
+#     Install-Module -Name Chocolatey -Force -AllowClobber -Verbose -Scope CurrentUser -RequiredVersion 2.2.1; \
+#     choco feature enable -n allowGlobalConfirmation; \
+#     choco install -y openjdk11 curl unzip jq; \
+#     Remove-Item -Force -Recurse ${Env:TEMP}\*
 
 #===================
 # Timezone settings
@@ -48,7 +53,7 @@ COPY supervisord.conf C:\etc
 #==========
 RUN New-Item -ItemType Directory -Force -Path C:\opt\selenium C:\opt\selenium\assets C:\var\run\supervisor C:\var\log\supervisor; \
     New-Item -ItemType File -Path C:\opt\selenium\config.toml -Force; \
-    Invoke-WebRequest -Uri https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.15.0/selenium-server-4.15.0.jar -OutFile C:\opt\selenium\selenium-server.jar
+    Invoke-WebRequest -Uri https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-http-jdk-client/4.11.0/selenium-http-jdk-client-4.11.0.jar -OutFile C:\opt\selenium\selenium-http-jdk-client.jar
 
 #=====
 # Download observability related jaegar jars and make them available in a separate directory
