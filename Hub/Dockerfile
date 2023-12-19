@@ -4,7 +4,7 @@ ARG AUTHORS
 FROM ${NAMESPACE}/base:${VERSION}
 LABEL authors=${AUTHORS}
 
-USER 1200
+USER seluser
 
 #========================
 # Selenium Hub Configuration
@@ -22,6 +22,6 @@ ENV SE_SESSION_RETRY_INTERVAL 15
 ENV SE_RELAX_CHECKS true
 
 COPY start-selenium-grid-hub.sh \
-    /opt/bin/
+    C:\opt\bin\
 
-COPY selenium-grid-hub.conf /etc/supervisor/conf.d/
+# COPY selenium-grid-hub.conf /etc/supervisor/conf.d/
