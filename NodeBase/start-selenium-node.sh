@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # Start the pulseaudio server
-pulseaudio -D --exit-idle-time=-1
+# pulseaudio -D --exit-idle-time=-1
 
 # Load the virtual sink and set it as default
-pacmd load-module module-virtual-sink sink_name=v1
-pacmd set-default-sink v1
+# pacmd load-module module-virtual-sink sink_name=v1
+# pacmd set-default-sink v1
 
 # set the monitor of v1 sink to be the default source
-pacmd set-default-source v1.monitor
+# pacmd set-default-source v1.monitor
 
-rm -f /tmp/.X*lock
+# rm -f /tmp/.X*lock
+
+# sudo ln -fs /usr/share/zoneinfo/"${TZ}" /etc/localtime 
+# sudo dpkg-reconfigure -f noninteractive tzdata
 
 if [[ -z "${SE_EVENT_BUS_HOST}" ]]; then
   echo "SE_EVENT_BUS_HOST not set, exiting!" 1>&2
@@ -36,11 +39,10 @@ if [ "$GENERATE_CONFIG" = true ]; then
   /opt/bin/generate_config
 fi
 
-EXTRA_LIBS=""
+EXTRA_LIBS="/opt/selenium/selenium-http-jdk-client.jar"
 
 if [ ! -z "$SE_ENABLE_TRACING" ]; then
   EXTERNAL_JARS=$(</external_jars/.classpath.txt)
-  EXTRA_LIBS="--ext "
   EXTRA_LIBS=${EXTRA_LIBS}:${EXTERNAL_JARS}
   echo "Tracing is enabled"
   echo "Classpath will be enriched with these external jars : " ${EXTRA_LIBS}
@@ -52,16 +54,11 @@ echo "Selenium Grid Node configuration: "
 cat "$CONFIG_FILE"
 echo "Starting Selenium Grid Node..."
 
-CHROME_DRIVER_PATH_PROPERTY=-Dwebdriver.chrome.driver=/usr/bin/chromedriver
-EDGE_DRIVER_PATH_PROPERTY=-Dwebdriver.edge.driver=/usr/bin/msedgedriver
-GECKO_DRIVER_PATH_PROPERTY=-Dwebdriver.gecko.driver=/usr/bin/geckodriver
-
-java ${JAVA_OPTS:-$SE_JAVA_OPTS} \
-  ${CHROME_DRIVER_PATH_PROPERTY} \
-  ${EDGE_DRIVER_PATH_PROPERTY} \
-  ${GECKO_DRIVER_PATH_PROPERTY} \
+java ${JAVA_OPTS:-$SE_JAVA_OPTS} -Dwebdriver.http.factory=jdk-http-client \
   -jar /opt/selenium/selenium-server.jar \
-  ${EXTRA_LIBS} node \
+  --ext ${EXTRA_LIBS} node \
   --bind-host ${SE_BIND_HOST} \
   --config "$CONFIG_FILE" \
+  --log-level FINE \
+  --log /opt/selenium/assets/selenium.log \
   ${SE_OPTS}

@@ -1,101 +1,132 @@
 ARG NAMESPACE
 ARG VERSION
 ARG AUTHORS
-FROM ${NAMESPACE}/node-base:${VERSION}
+FROM ${NAMESPACE}/galactus-bstack-base:${VERSION}
 LABEL authors=${AUTHORS}
 
-USER root
+RUN SETX PATH "%PATH%;C:\\Program Files\\Chrome;C:\\Program Files\\Chrome\\chrome.exe;C:\\Program Files\\chromedriver;C:\\Program Files\\chromedriver\\chromedriver.exe"
 
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install libatk1.0-0 libatk-bridge2.0-0 \
-    libxkbcommon-x11-0 libgbm1 libpango-1.0-0 \
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+# USER root
+
+# RUN apt-get update -qqy \
+#   && apt-get -qqy upgrade \
+#   && apt-get -qqy install \
+#   libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libgbm1 libgtk-3-0 libu2f-udev xdg-utils libvulkan1\
+#   && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 #============================================
 # Google Chrome
 #============================================
 # can specify versions by CHROME_VERSION;
-#  Support these inputs (following https://github.com/GoogleChromeLabs/chrome-for-testing):
-#       LATEST_RELEASE_STABLE
-#       LATEST_RELEASE_BETA
-#       LATEST_RELEASE_DEV
-#       LATEST_RELEASE_CANARY
-#       121 (specific major version)
-#       119.0.6045.105 (specific full version)
+#  e.g. google-chrome-stable=53.0.2785.101-1
+#       google-chrome-beta=53.0.2785.92-1
+#       google-chrome-unstable=54.0.2840.14-1
+#       latest (equivalent to google-chrome-stable)
+#       google-chrome-beta  (pull latest beta)
 #============================================
-ARG DOWNLOAD_HOST="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"
-ARG VERSION_HOST="https://googlechromelabs.github.io/chrome-for-testing"
-ARG CHROME_VERSION="LATEST_RELEASE_STABLE"
-ARG CHROME_PLATFORM="linux64"
-RUN if [ ! -z "$CHROME_VERSION" ]; \
-  then GET_VERSION_URL=$VERSION_HOST/$CHROME_VERSION \
-    && if [ $(curl -I -s -o /dev/null -w "%{http_code}" $GET_VERSION_URL) -eq 200 ]; \
-      then echo "Getting Chrome version from "$GET_VERSION_URL \
-      && CHROME_VERSION=$(wget -qO- $VERSION_HOST"/"$CHROME_VERSION | sed 's/\r$//') ; \
-    fi \
-  else echo "Getting Chrome version "$CHROME_DRIVER_VERSION ; \
-  fi \
-  && CHROME_URL=$DOWNLOAD_HOST/$CHROME_VERSION/$CHROME_PLATFORM/chrome-$CHROME_PLATFORM.zip \
-  && if [ $(curl -I -s -o /dev/null -w "%{http_code}" $CHROME_URL) -ne 200 ]; \
-    then CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | sed -E "s/([0-9]+).*/\1/") \
-    && echo "Getting Chrome latest major version from "$VERSION_HOST"/LATEST_RELEASE_"$CHROME_MAJOR_VERSION \
-    && CHROME_VERSION=$(wget -qO- $VERSION_HOST/LATEST_RELEASE_${CHROME_MAJOR_VERSION} | sed 's/\r$//') \
-    && CHROME_URL=$DOWNLOAD_HOST/$CHROME_VERSION/$CHROME_PLATFORM/chrome-$CHROME_PLATFORM.zip ; \
-  fi \
-  && echo "Using Chrome from: "$CHROME_URL \
-  && wget --no-verbose -O /tmp/chrome-$CHROME_PLATFORM.zip $CHROME_URL \
-  && rm -rf /opt/google/chrome \
-  && unzip /tmp/chrome-$CHROME_PLATFORM.zip -d /opt/google \
-  && mv /opt/google/chrome-$CHROME_PLATFORM /opt/google/chrome \
-  && rm /tmp/chrome-$CHROME_PLATFORM.zip \
-  && mv /opt/google/chrome/chrome-wrapper /opt/google/chrome/google-chrome \
-  && chmod +x /opt/google/chrome/google-chrome \
-  && ln -fs /opt/google/chrome/google-chrome /usr/bin/google-chrome
+ARG CHROME_VERSION
+RUN powershell -Command \
+    curl "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$($CHROME_VERSION)/win64/chrome-win64.zip" -O chrome.zip; \
+    Expand-Archive -Path 'chrome.zip' -DestinationPath 'C:\\Program Files\\Google\\Chrome'; \
+    Remove-Item -Path 'chrome.zip' -Force
 
 #=================================
 # Chrome Launch Script Wrapper
 #=================================
-COPY wrap_chrome_binary /opt/bin/wrap_chrome_binary
-RUN /opt/bin/wrap_chrome_binary
+# COPY wrap_chrome_binary /opt/bin/wrap_chrome_binary
+# RUN /opt/bin/wrap_chrome_binary
+
+# USER 1200
 
 #============================================
 # Chrome webdriver
 #============================================
 # can specify versions by CHROME_DRIVER_VERSION
-# Latest released version (following browser version) will be used by default
+# Latest released version will be used by default
 #============================================
-ARG CHROME_DRIVER_VERSION=$CHROME_VERSION
-RUN if [ ! -z "$CHROME_DRIVER_VERSION" ]; \
-  then GET_VERSION_URL=$VERSION_HOST/$CHROME_DRIVER_VERSION \
-    && if [ $(curl -I -s -o /dev/null -w "%{http_code}" $GET_VERSION_URL) -eq 200 ]; \
-      then echo "Getting ChromeDriver version from "$GET_VERSION_URL \
-      && CHROME_DRIVER_VERSION=$(wget -qO- $VERSION_HOST"/"$CHROME_DRIVER_VERSION | sed 's/\r$//') ; \
-    fi \
-  else CHROME_DRIVER_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+(\.[0-9]+)+).*/\1/") \
-    && echo "Getting ChromeDriver same as browser version "$CHROME_DRIVER_VERSION ; \
-  fi \
-  && CHROME_DRIVER_URL=$DOWNLOAD_HOST/$CHROME_DRIVER_VERSION/$CHROME_PLATFORM/chromedriver-$CHROME_PLATFORM.zip \
-  && if [ $(curl -I -s -o /dev/null -w "%{http_code}" $CHROME_DRIVER_URL) -ne 200 ]; \
-    then CHROME_MAJOR_VERSION=$(echo $CHROME_DRIVER_VERSION | sed -E "s/([0-9]+).*/\1/") \
-    && echo "Getting ChromeDriver latest major version from "$VERSION_HOST"/LATEST_RELEASE_"$CHROME_MAJOR_VERSION \
-    && CHROME_DRIVER_VERSION=$(wget -qO- $VERSION_HOST/LATEST_RELEASE_${CHROME_MAJOR_VERSION} | sed 's/\r$//') \
-    && CHROME_DRIVER_URL=$DOWNLOAD_HOST/$CHROME_DRIVER_VERSION/$CHROME_PLATFORM/chromedriver-$CHROME_PLATFORM.zip ; \
-  fi \
-  && echo "Using ChromeDriver from: "$CHROME_DRIVER_URL \
-  && echo "Using ChromeDriver version: "$CHROME_DRIVER_VERSION \
-  && wget --no-verbose -O /tmp/chromedriver_$CHROME_PLATFORM.zip $CHROME_DRIVER_URL \
-  && rm -rf /opt/selenium/chromedriver \
-  && unzip /tmp/chromedriver_$CHROME_PLATFORM.zip -d /opt/selenium \
-  && rm /tmp/chromedriver_$CHROME_PLATFORM.zip \
-  && mv /opt/selenium/chromedriver-$CHROME_PLATFORM/chromedriver /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION \
-  && chmod 755 /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION \
-  && ln -fs /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver
+ARG CHROME_DRIVER_VERSION
+RUN powershell -Command \
+    curl "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$($CHROME_DRIVER_VERSION)/win64/chromedriver-win64.zip" -O chromedriver.zip; \
+    Expand-Archive -Path 'chromedriver.zip' -DestinationPath 'C:\\Program Files\\Google\\chromedriver'; \
+    Remove-Item -Path 'chromedriver.zip' -Force
 
-USER 1200
+
+# RUN if [ -z "$CHROME_DRIVER_VERSION" ]; \
+#   then CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-9]+){3}.*/\1/") \
+#     && NO_SUCH_KEY=$(curl -ls https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION} | head -n 1 | grep -oe NoSuchKey) ; \
+#     if [ -n "$NO_SUCH_KEY" ] && [ $CHROME_MAJOR_VERSION -le 115 ]; then \
+#       echo "No Chromedriver for version $CHROME_MAJOR_VERSION. Use previous major version instead" \
+#       && CHROME_MAJOR_VERSION=$(expr $CHROME_MAJOR_VERSION - 1); \
+#     fi ; \
+#     if [ $CHROME_MAJOR_VERSION -le 115 ]; then \
+#       CHROME_DRIVER_VERSION=$(wget --no-verbose -O - "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION}"); \
+#     fi ; \
+#   fi \
+#   && CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-9]+){3}.*/\1/") \
+#   && echo "Using chromedriver version:" $CHROME_DRIVER_VERSION; \
+#   if [ $CHROME_MAJOR_VERSION -gt 115 ]; then \
+#     wget --no-verbose -O /tmp/chromedriver_linux64.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_DRIVER_VERSION/linux64/chromedriver-linux64.zip; \
+#   else \
+#     wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip; \
+#   fi \
+#   && rm -rf /opt/selenium/chromedriver \
+#   && sudo unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
+#   && rm /tmp/chromedriver_linux64.zip; \
+#   if [ $CHROME_MAJOR_VERSION -gt 115 ]; then \
+#     sudo mv /opt/selenium/chromedriver-linux64/chromedriver /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION; \
+#   else \
+#     sudo mv /opt/selenium/chromedriver /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION; \
+#   fi \
+#   && sudo chmod 755 /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION \
+#   && sudo ln -fs /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ARG CHROME_DRIVER_VERSION
+
+# SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# RUN if ($env:CHROME_DRIVER_VERSION -eq $null) { \
+#     $CHROME_MAJOR_VERSION = (Get-Item (Get-Command google-chrome).Source).VersionInfo.FileVersion -replace '.*?(\d+)\.\d+\.\d+\.\d+', '$1'; \
+#     $NO_SUCH_KEY = (Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$($CHROME_MAJOR_VERSION)" -ErrorAction SilentlyContinue).Content -match 'NoSuchKey'; \
+#     if ($NO_SUCH_KEY -and ($CHROME_MAJOR_VERSION -le 115)) { \
+#       Write-Host "No Chromedriver for version $CHROME_MAJOR_VERSION. Use previous major version instead"; \
+#       $CHROME_MAJOR_VERSION = [math]::Max(0, $CHROME_MAJOR_VERSION - 1); \
+#     } \
+#     if ($CHROME_MAJOR_VERSION -le 115) { \
+#       $env:CHROME_DRIVER_VERSION = (Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$($CHROME_MAJOR_VERSION)").Content.Trim(); \
+#     } \
+#   } \
+#   $CHROME_MAJOR_VERSION = (Get-Item (Get-Command google-chrome).Source).VersionInfo.FileVersion -replace '.*?(\d+)\.\d+\.\d+\.\d+', '$1'; \
+#   Write-Host "Using chromedriver version: $env:CHROME_DRIVER_VERSION"; \
+#   if ($CHROME_MAJOR_VERSION -gt 115) { \
+#     Invoke-WebRequest -Uri "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$($env:CHROME_DRIVER_VERSION)/win32/chromedriver.zip" -OutFile /tmp/chromedriver_win32.zip; \
+#   } else { \
+#     Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/$($env:CHROME_DRIVER_VERSION)/chromedriver_win32.zip" -OutFile /tmp/chromedriver_win32.zip; \
+#   } \
+#   Expand-Archive -Path /tmp/chromedriver_win32.zip -DestinationPath C:\selenium -Force; \
+#   Remove-Item -Path /tmp/chromedriver_win32.zip -Force; \
+#   if ($CHROME_MAJOR_VERSION -gt 115) { \
+#     Move-Item -Path C:\selenium\chromedriver.exe -Destination C:\selenium\chromedriver-$($env:CHROME_DRIVER_VERSION).exe; \
+#   } else { \
+#     Move-Item -Path C:\selenium\chromedriver.exe -Destination C:\selenium\chromedriver-$($env:CHROME_DRIVER_VERSION).exe; \
+#   } \
+#   Rename-Item -Path C:\selenium\chromedriver-$($env:CHROME_DRIVER_VERSION).exe -NewName chromedriver.exe; \
+#   [System.Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\selenium', [System.EnvironmentVariableTarget]::Machine)
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 #============================================
-# Dumping Browser information for config
+# Dumping Browser name and version for config
 #============================================
-RUN echo "chrome" > /opt/selenium/browser_name
-RUN google-chrome --version | awk '{print $5}' > /opt/selenium/browser_version
-RUN echo "\"goog:chromeOptions\": {\"binary\": \"/usr/bin/google-chrome\"}" > /opt/selenium/browser_binary_location
+# RUN echo "chrome" > /opt/selenium/browser_name

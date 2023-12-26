@@ -23,20 +23,20 @@ RUN SETX TZ "UTC"
 #========================================
 # Add seluser with passwordless administrators
 #========================================
-RUN net user seluser /add
-RUN net localgroup Administrators seluser /add
+# RUN net user seluser /add
+# RUN net localgroup Administrators seluser /add
 
 # #==========
 # # Selenium & relaxing permissions for OpenShift and other non-sudo environments
 # #==========
-RUN New-Item -ItemType Directory -Force -Path C:\opt\selenium C:\opt\selenium\assets C:\var\run\supervisor C:\var\log\supervisor C:\Users\seluser C:\opt\bin; \
+RUN New-Item -ItemType Directory -Force -Path C:\opt\selenium C:\opt\selenium\assets C:\var\run\supervisor C:\var\log\supervisor C:\opt\bin C:\Users\seluser; \
     New-Item -ItemType File -Path C:\opt\selenium\config.toml -Force;
 
 RUN powershell -Command \
     curl https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-http-jdk-client/4.11.0/selenium-http-jdk-client-4.11.0.jar -O C:\opt\selenium\selenium-http-jdk-client.jar
 
-USER seluser
-ENV HOME C:\Users\seluser
+# USER seluser
+# ENV HOME C:\Users\seluser
 
 COPY selenium.jar C:\opt\selenium\selenium-server.jar
 
