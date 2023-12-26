@@ -26,10 +26,10 @@ LABEL authors=${AUTHORS}
 
 # Download and install Node.js
 RUN powershell -Command \
-    curl "https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip" -O nodejs.zip \
-    && Expand-Archive nodejs.zip -DestinationPath C:\nodejs \
-    && setx /M PATH "%PATH%;C:\nodejs\node-v18.15.0-win-x64" \
-    && Remove-Item -Force nodejs.zip
+    curl "https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip" -O nodejs.zip; \
+    Expand-Archive nodejs.zip -DestinationPath C:\nodejs; \
+    setx /M PATH "%PATH%;C:\nodejs\node-v18.15.0-win-x64"; \
+    Remove-Item -Path 'nodejs.zip' -Force
 
 # Display Node.js version
 RUN node --version
