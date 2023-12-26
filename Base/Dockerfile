@@ -38,7 +38,7 @@ RUN powershell -Command \
 # USER seluser
 # ENV HOME C:\Users\seluser
 
-COPY selenium.jar C:\opt\selenium\selenium-server.jar
+COPY selenium.jar C:\\opt\\selenium\\selenium-server.jar
 
 # #===================================================
 # # Run the following commands as non-privileged user
