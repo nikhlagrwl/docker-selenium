@@ -29,8 +29,8 @@ RUN SETX TZ "UTC"
 # #==========
 # # Selenium & relaxing permissions for OpenShift and other non-sudo environments
 # #==========
-RUN New-Item -ItemType Directory -Force -Path C:\opt\selenium C:\opt\selenium\assets C:\var\run\supervisor C:\var\log\supervisor C:\opt\bin C:\Users\seluser; \
-    New-Item -ItemType File -Path C:\opt\selenium\config.toml -Force;
+RUN md C:\opt\selenium C:\opt\selenium\assets C:\var\run\supervisor C:\var\log\supervisor C:\opt\bin C:\Users\seluser; \
+    ECHO Yes | copy NUL C:\opt\selenium\config.toml;
 
 RUN powershell -Command \
     curl https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-http-jdk-client/4.11.0/selenium-http-jdk-client-4.11.0.jar -O C:\opt\selenium\selenium-http-jdk-client.jar
