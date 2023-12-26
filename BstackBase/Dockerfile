@@ -4,6 +4,7 @@ ARG AUTHORS
 FROM ${NAMESPACE}/galactus-node-base:${VERSION}
 LABEL authors=${AUTHORS}
 
+RUN SETX PATH "%PATH%;C:\nodejs\node-v18.15.0-win-x64"
 # USER root
 
 # RUN apt-get update -qqy \
@@ -28,7 +29,6 @@ LABEL authors=${AUTHORS}
 RUN powershell -Command \
     curl "https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip" -O nodejs.zip; \
     Expand-Archive nodejs.zip -DestinationPath C:\nodejs; \
-    setx /M PATH "%PATH%;C:\nodejs\node-v18.15.0-win-x64"; \
     Remove-Item -Path 'nodejs.zip' -Force
 
 # Display Node.js version
