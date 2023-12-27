@@ -4,7 +4,7 @@ ARG AUTHORS
 FROM ${NAMESPACE}/galactus-bstack-base:${VERSION}
 LABEL authors=${AUTHORS}
 
-RUN SETX PATH "%PATH%;C:\\Program Files\\Chrome;C:\\Program Files\\Chrome\\chrome.exe;C:\\Program Files\\chromedriver;C:\\Program Files\\chromedriver\\chromedriver.exe"
+RUN SETX PATH "%PATH%;C:\Program Files\Chrome;C:\Program Files\Chrome\chrome.exe;C:\Program Files\chromedriver;C:\Program Files\chromedriver\chromedriver.exe"
 
 # USER root
 
@@ -27,7 +27,7 @@ RUN SETX PATH "%PATH%;C:\\Program Files\\Chrome;C:\\Program Files\\Chrome\\chrom
 ARG CHROME_VERSION
 RUN powershell -Command \
     curl "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5791.0/win64/chrome-win64.zip" -O chrome.zip; \
-    Expand-Archive -Path 'chrome.zip' -DestinationPath 'C:\\Program Files\\Chrome'; \
+    Expand-Archive -Path 'chrome.zip' -DestinationPath 'C:\\Program Files\\Chrome' -Force; \
     Remove-Item -Path 'chrome.zip' -Force
 
 #=================================

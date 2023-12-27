@@ -10,7 +10,7 @@ RUN SETX PATH "%PATH%;C:\openjdk-11\bin"
 #================================================
 RUN powershell -Command \
     curl https://aka.ms/download-jdk/microsoft-jdk-11.0.21-windows-x64.zip -O openjdk.zip; \
-    Expand-Archive -Path 'openjdk.zip' -DestinationPath 'C:\\'; \
+    Expand-Archive -Path 'openjdk.zip' -DestinationPath 'C:\\' -Force; \
     Move-Item -Path 'C:\\jdk-*' -Destination $env:JAVA_HOME ; \
     Remove-Item -Path 'openjdk.zip' -Force
 
