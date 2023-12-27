@@ -27,7 +27,7 @@ RUN SETX PATH "%PATH%;C:\\Program Files\\Chrome;C:\\Program Files\\Chrome\\chrom
 ARG CHROME_VERSION
 RUN powershell -Command \
     curl "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5791.0/win64/chrome-win64.zip" -O chrome.zip; \
-    Expand-Archive -Path 'chrome.zip' -DestinationPath 'C:\\Program Files\\Google\\Chrome'; \
+    Expand-Archive -Path 'chrome.zip' -DestinationPath 'C:\\Program Files\\Chrome'; \
     Remove-Item -Path 'chrome.zip' -Force
 
 #=================================
@@ -47,7 +47,7 @@ RUN powershell -Command \
 ARG CHROME_DRIVER_VERSION
 RUN powershell -Command \
     curl "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5791.0/win64/chromedriver-win64.zip" -O chromedriver.zip; \
-    Expand-Archive -Path 'chromedriver.zip' -DestinationPath 'C:\\Program Files\\Google\\chromedriver'; \
+    Expand-Archive -Path 'chromedriver.zip' -DestinationPath 'C:\\Program Files\\chromedriver'; \
     Remove-Item -Path 'chromedriver.zip' -Force
 
 
