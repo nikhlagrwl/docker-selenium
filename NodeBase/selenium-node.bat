@@ -1,0 +1,1 @@
+java -Dwebdriver.http.factory=jdk-http-client -jar C:\opt\selenium\selenium-server.jar --ext C:\opt\selenium\selenium-http-jdk-client.jar node --bind-host false
