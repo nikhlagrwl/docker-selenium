@@ -191,4 +191,4 @@ COPY selenium-node.bat C:\\opt\\selenium-node.bat
 EXPOSE 5900
 # ENV SE_JAVA_OPTS="-Dbstack_namespace=regression-eu-common"
 # CMD ["java",  ""%SE_JAVA_OPTS%"", "-Dwebdriver.http.factory=jdk-http-client", "-jar C:\\opt\\selenium\\selenium-server.jar --ext C:\\opt\\selenium\\selenium-http-jdk-client.jar node --bind-host false"]
-# CMD ["cmd", "/c", "C:\\opt\\selenium-node.bat"]
+CMD ["cmd", "/c", "C:\\opt\\selenium-node.bat"]
