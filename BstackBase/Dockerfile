@@ -39,35 +39,4 @@ RUN npm --version
 # Copy screen_recorder files
 #=================================
 
-
-
-
-# USER 1200
-
-# RUN cd \
-#   && mkdir high-scale-testing
-
-# USER root
-# ADD screen_recorder /home/seluser/high-scale-testing/screen_recorder
-# RUN chown -R seluser:seluser /home/seluser/high-scale-testing/screen_recorder
-# USER 1200
-
-# # Deleting unwanted files as copying from local, this won't be required in the minion job
-# RUN cd \
-#   && cd /home/seluser/high-scale-testing \
-#   && cd screen_recorder \
-#   && rm -rf config.json \
-#   && rm -rf error.log \
-#   && rm -rf combined.log \
-#   && rm -rf node_modules \
-#   && rm -rf log
-
-# RUN cd \
-#   && cd high-scale-testing \
-#   && cd screen_recorder \
-#   && npm install \
-#   && cp config.json.sample config.json
-
-# COPY selenium.conf /etc/supervisor/conf.d/
-
-# EXPOSE 8000
+EXPOSE 8000
