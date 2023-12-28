@@ -163,7 +163,7 @@ ENV SE_VNC_PORT 5900
 ENV DISPLAY :99.0
 ENV DISPLAY_NUM 99
 # Path to the Configfile
-ENV CONFIG_FILE=C:\opt\selenium\config.toml
+ENV CONFIG_FILE=C:\\opt\\selenium\\config.toml
 ENV GENERATE_CONFIG true
 # Drain the Node after N sessions. 
 # A value higher than zero enables the feature

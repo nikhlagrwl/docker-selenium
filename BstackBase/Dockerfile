@@ -39,4 +39,12 @@ RUN npm --version
 # Copy screen_recorder files
 #=================================
 
+RUN md C:\high-scale-testing
+ADD screen_recorder C:\\high-scale-testing\\screen_recorder
+
+WORKDIR C:\\high-scale-testing\\screen_recorder
+RUN npm install
+RUN copy config.json.sample config.json
+WORKDIR C:\\
+
 EXPOSE 8000
