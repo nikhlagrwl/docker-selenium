@@ -126,3 +126,4 @@ RUN powershell -Command \
 #============================================
 RUN SETX SE_NODE_BROWSER_NAME chrome
 RUN SETX SE_NODE_BROWSER_VERSION 116.0
+# CMD ["cmd", "/c", "C:\\opt\\selenium-node.bat"]
