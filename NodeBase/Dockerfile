@@ -188,6 +188,8 @@ ENV DBUS_SESSION_BUS_ADDRESS=null
 # Copying configuration script generator
 # COPY generate_config /opt/bin/generate_config
 COPY selenium-node.bat C:\\opt\\selenium-node.bat
+COPY generate_node_config.bat C:\\opt\\generate_node_config.bat
+
 EXPOSE 5900
 # ENV SE_JAVA_OPTS="-Dbstack_namespace=regression-eu-common"
 # CMD ["java",  ""%SE_JAVA_OPTS%"", "-Dwebdriver.http.factory=jdk-http-client", "-jar C:\\opt\\selenium\\selenium-server.jar --ext C:\\opt\\selenium\\selenium-http-jdk-client.jar node --bind-host false"]
