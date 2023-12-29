@@ -1,4 +1,3 @@
-@echo off
 setlocal enabledelayedexpansion
 
 REM Function to extract short version
