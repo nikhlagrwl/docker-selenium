@@ -4,7 +4,7 @@ ARG AUTHORS
 FROM ${NAMESPACE}/galactus-bstack-base:${VERSION}
 LABEL authors=${AUTHORS}
 
-RUN SETX PATH "%PATH%;C:\chromedriver-win64\;C:\chromedriver-win64\chromedriver.exe;C:\chrome-win64\;C:\chrome-win64\chrome.exe;"
+RUN SETX PATH "%PATH%;C:\chromedriver-win64\;C:\chromedriver-win64\chromedriver.exe;C:\chrome-win64\chrome.exe;C:\chrome-win64\;"
 
 # USER root
 
