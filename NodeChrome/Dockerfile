@@ -124,6 +124,12 @@ RUN powershell -Command \
 #============================================
 # Dumping Browser name and version for config
 #============================================
+
+COPY selenium-node.bat C:\\opt\\selenium-node.bat
+COPY generate_node_config.bat C:\\opt\\generate_node_config.bat
+EXPOSE 5555
+
+
 RUN SETX SE_NODE_BROWSER_NAME chrome
 RUN SETX SE_NODE_BROWSER_VERSION 116.0
 CMD ["cmd", "/c", "C:\\opt\\selenium-node.bat"]
